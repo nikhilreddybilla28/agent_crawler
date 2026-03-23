@@ -1,13 +1,18 @@
 """LLM integration for action selection with telemetry tracking."""
 
 from __future__ import annotations
+import base64
 import json
 import os
 import re
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from .observer import InteractiveElement
+
+# Module-level flag: set to True to send screenshots alongside text
+VISION_ENABLED = False
 
 
 # ---------------------------------------------------------------------------
@@ -78,7 +83,7 @@ class AgentAction:
 # Prompts
 # ---------------------------------------------------------------------------
 
-SYSTEM_PROMPT = """\
+SYSTEM_PROMPT_TEXT = """\
 You are a web exploration agent. Your job is to explore a web application by interacting with UI elements to discover all distinct states/pages.
 
 You will be given:
@@ -104,6 +109,40 @@ Respond with ONLY a JSON object (no markdown, no explanation):
   "reasoning": "<brief explanation>"
 }\
 """
+
+SYSTEM_PROMPT_VISION = """\
+You are a web exploration agent. Your job is to explore a web application by interacting with UI elements to discover all distinct states/pages.
+
+You will be given:
+1. A screenshot of the current page (use it to understand layout, visual state, and spatial context)
+2. The current page URL and title
+3. A numbered list of interactive elements on the page
+4. A list of elements you have already interacted with on this page
+5. (Optional) Information-gain hints showing which element types have been most productive
+
+Use the screenshot to understand the visual context — element positioning, disabled/grayed-out states, modals, overlays, and visual cues that the element list alone may not capture.
+
+Your task: Choose ONE element to interact with that is most likely to lead to a new, unexplored state. Prefer navigation links, tabs, and buttons that suggest new pages/views over elements that would repeat or stay on the same page.
+
+Rules:
+- Do NOT choose elements you have already explored (listed in "Already Explored")
+- Prefer links and navigation buttons over form inputs (unless filling a form is needed to proceed)
+- Avoid destructive actions: do not click "delete", "remove", "logout", "sign out", "reset" buttons
+- If an element appears visually disabled or grayed out in the screenshot, skip it
+- Consider the information-gain hints: higher scores mean that element type has historically led to new states
+
+Respond with ONLY a JSON object (no markdown, no explanation):
+{
+  "element_index": <int>,
+  "action_type": "click" | "fill" | "select",
+  "value": "<string or null>",
+  "reasoning": "<brief explanation>"
+}\
+"""
+
+
+def _get_system_prompt() -> str:
+    return SYSTEM_PROMPT_VISION if VISION_ENABLED else SYSTEM_PROMPT_TEXT
 
 LOGIN_SYSTEM_PROMPT = """\
 You are a web agent that needs to log in to a web application. You will be given the page context and credentials.
@@ -148,8 +187,22 @@ def _get_llm_client():
     )
 
 
-def _call_llm(system: str, user: str, purpose: str = "action_selection") -> str:
-    """Call the LLM and return the response text. Records telemetry."""
+def _encode_image(path: str) -> str | None:
+    """Base64-encode an image file for vision API calls."""
+    try:
+        data = Path(path).read_bytes()
+        return base64.b64encode(data).decode("utf-8")
+    except Exception:
+        return None
+
+
+def _call_llm(system: str, user: str, purpose: str = "action_selection",
+              screenshot_path: str | None = None) -> str:
+    """Call the LLM and return the response text. Records telemetry.
+
+    If screenshot_path is provided and VISION_ENABLED is True,
+    sends the image alongside text for multimodal reasoning.
+    """
     provider, client = _get_llm_client()
     start = time.time()
     input_tokens = 0
@@ -159,34 +212,54 @@ def _call_llm(system: str, user: str, purpose: str = "action_selection") -> str:
     success = False
     result = ""
 
+    # Build the user message content (text-only or multimodal)
+    use_vision = VISION_ENABLED and screenshot_path
+    image_b64 = _encode_image(screenshot_path) if use_vision else None
+
     try:
         if provider == "anthropic":
             model_used = "claude-sonnet-4-20250514"
+            if image_b64:
+                user_content = [
+                    {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": image_b64}},
+                    {"type": "text", "text": user},
+                ]
+            else:
+                user_content = user
             response = client.messages.create(
                 model=model_used,
                 max_tokens=1024,
                 system=system,
-                messages=[{"role": "user", "content": user}],
+                messages=[{"role": "user", "content": user_content}],
             )
             result = response.content[0].text
             input_tokens = response.usage.input_tokens
             output_tokens = response.usage.output_tokens
         else:
-            model_used = os.environ.get("LLM_MODEL", "gpt-oss-120b" if provider == "arc" else "gpt-4o-mini")
+            model_used = os.environ.get("LLM_MODEL", "Kimi-K2.5" if provider == "arc" else "gpt-4o-mini")
             print(f"[INFO] : calling {model_used} from {provider}")
+
+            if image_b64:
+                user_content = [
+                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_b64}"}},
+                    {"type": "text", "text": user},
+                ]
+            else:
+                user_content = user
+
             response = client.chat.completions.create(
                 model=model_used,
                 max_tokens=1024,
                 messages=[
                     {"role": "system", "content": system},
-                    {"role": "user", "content": user},
+                    {"role": "user", "content": user_content},
                 ],
             )
             result = response.choices[0].message.content
             if response.usage:
                 input_tokens = response.usage.prompt_tokens or 0
                 output_tokens = response.usage.completion_tokens or 0
-            print(f"[INFO] : model responded :{result[:10]}")
+            print(f"[INFO] : model responded :{result[:50]}")
 
         success = True
 
@@ -229,12 +302,16 @@ def decide_action(
     explored_indices: set[int],
     elements: list[InteractiveElement],
     role_rewards: dict[str, float] | None = None,
+    screenshot_path: str | None = None,
 ) -> AgentAction | None:
     """Ask the LLM which element to interact with next.
 
     Optionally accepts role_rewards — a dict mapping element roles to
     information-gain scores (higher = more likely to discover new states).
     These are appended to the prompt as exploration hints.
+
+    If screenshot_path is provided and VISION_ENABLED, the annotated
+    screenshot is sent alongside text for multimodal reasoning.
     """
     if not elements:
         return None
@@ -260,27 +337,55 @@ def decide_action(
     if not available:
         return None
 
-    try:
-        response = _call_llm(SYSTEM_PROMPT, user_msg, purpose="action_selection")
-        data = _parse_json(response)
-        return AgentAction(
-            element_index=int(data["element_index"]),
-            action_type=data.get("action_type", "click"),
-            value=data.get("value"),
-            reasoning=data.get("reasoning", ""),
-        )
-    except (json.JSONDecodeError, KeyError, TypeError) as e:
-        print(f"  [warn] LLM parse failed ({e}), using fallback selection")
-        # Fallback: pick unexplored element with highest information-gain score
-        if role_rewards:
-            available.sort(key=lambda el: role_rewards.get(el.role, 0.5), reverse=True)
-        el = available[0]
-        return AgentAction(
-            element_index=el.index,
-            action_type="click",
-            value=None,
-            reasoning="fallback — LLM response parsing failed, picked by info-gain score",
-        )
+    MAX_RETRIES = 3
+    last_error = ""
+
+    for attempt in range(MAX_RETRIES):
+        try:
+            retry_msg = user_msg
+            if last_error:
+                retry_msg += f"\n\n[RETRY {attempt}/{MAX_RETRIES}] Your previous response failed to parse: {last_error}\nPlease respond with ONLY valid JSON."
+
+            response = _call_llm(_get_system_prompt(), retry_msg,
+                                purpose="action_selection",
+                                screenshot_path=screenshot_path)
+            data = _parse_json(response)
+
+            # Validate element_index is in range and not already explored
+            idx = int(data["element_index"])
+            if idx < 0 or idx >= len(elements):
+                last_error = f"element_index {idx} is out of range [0, {len(elements)-1}]"
+                print(f"  [warn] LLM returned invalid index ({last_error}), retry {attempt+1}/{MAX_RETRIES}")
+                continue
+            if idx in explored_indices:
+                last_error = f"element_index {idx} was already explored"
+                print(f"  [warn] LLM picked explored element ({last_error}), retry {attempt+1}/{MAX_RETRIES}")
+                continue
+
+            return AgentAction(
+                element_index=idx,
+                action_type=data.get("action_type", "click"),
+                value=data.get("value"),
+                reasoning=data.get("reasoning", ""),
+            )
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            last_error = str(e)
+            print(f"  [warn] LLM parse failed ({e}), retry {attempt+1}/{MAX_RETRIES}")
+        except Exception as e:
+            last_error = str(e)
+            print(f"  [warn] LLM call failed ({e}), retry {attempt+1}/{MAX_RETRIES}")
+
+    # All retries exhausted — fallback to info-gain ranked selection
+    print(f"  [warn] All {MAX_RETRIES} LLM retries failed, using fallback selection")
+    if role_rewards:
+        available.sort(key=lambda el: role_rewards.get(el.role, 0.5), reverse=True)
+    el = available[0]
+    return AgentAction(
+        element_index=el.index,
+        action_type="click",
+        value=None,
+        reasoning=f"fallback — LLM failed after {MAX_RETRIES} retries, picked by info-gain score",
+    )
 
 
 def decide_login_actions(
@@ -294,18 +399,36 @@ def decide_login_actions(
         f"Credentials:\n  Username: {username}\n  Password: {password}"
     )
 
-    try:
-        response = _call_llm(LOGIN_SYSTEM_PROMPT, user_msg, purpose="login")
-        data = _parse_json(response)
-        actions = []
-        for item in data:
-            actions.append(AgentAction(
-                element_index=int(item["element_index"]),
-                action_type=item.get("action_type", "click"),
-                value=item.get("value"),
-                reasoning="login sequence",
-            ))
-        return actions
-    except (json.JSONDecodeError, KeyError, TypeError) as e:
-        print(f"  [warn] Login LLM parse failed: {e}")
-        return []
+    MAX_RETRIES = 3
+    last_error = ""
+
+    for attempt in range(MAX_RETRIES):
+        try:
+            retry_msg = user_msg
+            if last_error:
+                retry_msg += f"\n\n[RETRY {attempt}/{MAX_RETRIES}] Previous response failed: {last_error}\nPlease respond with ONLY a valid JSON array."
+
+            response = _call_llm(LOGIN_SYSTEM_PROMPT, retry_msg, purpose="login")
+            data = _parse_json(response)
+            if not isinstance(data, list):
+                last_error = f"Expected JSON array, got {type(data).__name__}"
+                continue
+
+            actions = []
+            for item in data:
+                actions.append(AgentAction(
+                    element_index=int(item["element_index"]),
+                    action_type=item.get("action_type", "click"),
+                    value=item.get("value"),
+                    reasoning="login sequence",
+                ))
+            return actions
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            last_error = str(e)
+            print(f"  [warn] Login LLM parse failed ({e}), retry {attempt+1}/{MAX_RETRIES}")
+        except Exception as e:
+            last_error = str(e)
+            print(f"  [warn] Login LLM call failed ({e}), retry {attempt+1}/{MAX_RETRIES}")
+
+    print(f"  [warn] Login failed after {MAX_RETRIES} retries")
+    return []

@@ -1,0 +1,136 @@
+[vision] Screenshot mode enabled — sending images to VLM
+Starting exploration of https://example.com
+Max steps: 10
+
+  NEW state: state_001 — Example Domain (https://example.com/)
+  Found 1 interactive elements, phash=bc3c38c1...
+
+--- Step 1/10 ---
+[INFO] : calling Kimi-K2.5 from arc
+[INFO] : model responded : {
+  "element_index": 0,
+  "action_type": "click",
+  Action: click on [0] link: Learn more
+  Reason: Only one interactive element available - the 'Learn more' link. It's unexplored and likely leads to a new page with more information about example domains.
+  NEW state: state_002 — Example Domains (https://www.iana.org/help/example-domains)
+  Found 26 interactive elements, phash=8f0f40c5...
+
+--- Step 2/10 ---
+[INFO] : calling Kimi-K2.5 from arc
+  [warn] LLM parse failed ('NoneType' object is not subscriptable), retry 1/3
+[INFO] : calling Kimi-K2.5 from arc
+[INFO] : model responded : {
+  "element_index": 0,
+  "action_type": "click",
+  Action: click on [0] link: Domains
+  Reason: Clicking the main 'Domains' navigation link will likely navigate to the primary Domains section overview page, which is a distinct state from the current example-domains help page.
+  NEW state: state_003 — Domain Name Services (https://www.iana.org/domains)
+  Found 31 interactive elements, phash=bb07440f...
+
+--- Step 3/10 ---
+[INFO] : calling Kimi-K2.5 from arc
+[INFO] : model responded : {
+  "element_index": 1,
+  "action_type": "click",
+  Action: click on [1] link: Protocols
+  Reason: Clicking on the 'Protocols' navigation link will navigate away from the current Domains page to the Protocols section, which is a distinct major section of the IANA website. This follows the information-gain preference for navigation elements that lead to new page states.
+  [info] 8 nav elements, 4123 content links — capped to 40, skipped 4091
+  NEW state: state_004 — Protocol Registries (https://www.iana.org/protocols)
+  Found 40 interactive elements, phash=b90f1447...
+
+--- Step 4/10 ---
+  [info] 8 nav elements, 4123 content links — capped to 40, skipped 4091
+[INFO] : calling Kimi-K2.5 from arc
+[INFO] : model responded : ```json
+{
+  "element_index": 0,
+  "action_type": 
+  Action: click on [0] link: Domains
+  Reason: Domains is a top-level navigation link representing a major section of the IANA website. Clicking it should navigate to the Domains section, which is likely a distinct state from the current Protocol Registries page. This will help explore the breadth of the website structure.
+  Recognized existing state: state_003 (Domain Name Services)
+
+--- Step 5/10 ---
+[INFO] : calling Kimi-K2.5 from arc
+[INFO] : model responded : {
+  "element_index": 2,
+  "action_type": "click",
+  Action: click on [2] link: Numbers
+  Reason: Numbers is a top-level navigation link in the main menu, similar to Protocols which was already explored. Clicking it should lead to a new major section of the website about number resources (likely covering IP addresses, AS numbers, etc.), providing access to distinct content and potentially new sub-pages.
+  [info] 18 nav elements, 58 content links — capped to 40, skipped 36
+  NEW state: state_005 — Number Resources (https://www.iana.org/numbers)
+  Found 40 interactive elements, phash=bb071b0d...
+
+--- Step 6/10 ---
+  [info] 18 nav elements, 58 content links — capped to 40, skipped 36
+[INFO] : calling Kimi-K2.5 from arc
+[INFO] : model responded : {"element_index": 0, "action_type": "click", "val
+  Action: click on [0] link: Domains
+  Reason: The Domains link is a main navigation element that will likely lead to a completely different section of the IANA website, helping explore the overall site structure and discover a new distinct state.
+  Recognized existing state: state_003 (Domain Name Services)
+
+--- Step 7/10 ---
+[INFO] : calling Kimi-K2.5 from arc
+  [warn] LLM parse failed ('NoneType' object is not subscriptable), retry 1/3
+[INFO] : calling Kimi-K2.5 from arc
+  [warn] LLM parse failed ('NoneType' object is not subscriptable), retry 2/3
+[INFO] : calling Kimi-K2.5 from arc
+  [warn] LLM parse failed ('NoneType' object is not subscriptable), retry 3/3
+  [warn] All 3 LLM retries failed, using fallback selection
+  Action: click on [0] link: Domains
+  Reason: fallback — LLM failed after 3 retries, picked by info-gain score
+  Recognized existing state: state_003 (Domain Name Services)
+
+--- Step 8/10 ---
+[INFO] : calling Kimi-K2.5 from arc
+[INFO] : model responded : {
+  "element_index": 3,
+  "action_type": "click",
+  Action: click on [3] link: About
+  Reason: About is the remaining unexplored top-level navigation link alongside Domains, Protocols, and Numbers (which are already explored). Clicking it will likely lead to a distinct new page about IANA's organization and mission.
+  NEW state: state_006 — About us (https://www.iana.org/about)
+  Found 30 interactive elements, phash=b90f4f07...
+
+--- Step 9/10 ---
+[INFO] : calling Kimi-K2.5 from arc
+[INFO] : model responded : {
+  "element_index": 0,
+  "action_type": "click",
+  Action: click on [0] link: Domains
+  Reason: Clicking on the main navigation link 'Domains' will likely take me to a completely different section of the IANA website, exploring the Domain Names management area. This is a high-level navigation element that should reveal a new page state distinct from the current About page.
+  Recognized existing state: state_003 (Domain Name Services)
+
+--- Step 10/10 ---
+[INFO] : calling Kimi-K2.5 from arc
+[INFO] : model responded : {
+  "element_index": 5,
+  "action_type": "click",
+  Action: click on [5] link: Root Zone Management
+  Reason: Clicking on 'Root Zone Management' in the sidebar navigation to explore a new sub-page within the Domains section. This is a distinct section from the current Overview page and should lead to new content about root zone management.
+  [info] 15 nav elements, 29 content links — capped to 40, skipped 4
+  [tier-2] Visual match: pHash distance=8 to state_004
+  Recognized existing state: state_004 (Root Zone Management)
+
+==================================================
+States discovered: 6
+Transitions recorded: 10
+
+  [state_001] Example Domain (https://example.com/) phash=bc3c38c1...
+  [state_002] Example Domains (https://www.iana.org/help/example-domains) phash=8f0f40c5...
+  [state_003] Domain Name Services (https://www.iana.org/domains) phash=bb07440f...
+  [state_004] Protocol Registries (https://www.iana.org/protocols) phash=b90f1447...
+  [state_005] Number Resources (https://www.iana.org/numbers) phash=bb071b0d...
+  [state_006] About us (https://www.iana.org/about) phash=b90f4f07...
+
+  state_001 --(click 'Learn more')--> state_002
+  state_002 --(click 'Domains')--> state_003
+  state_003 --(click 'Protocols')--> state_004
+  state_004 --(click 'Domains')--> state_003
+  state_003 --(click 'Numbers')--> state_005
+  state_005 --(click 'Domains')--> state_003
+  state_003 --(click 'Domains')--> state_003
+  state_003 --(click 'About')--> state_006
+  state_006 --(click 'Domains')--> state_003
+  state_003 --(click 'Root Zone Management')--> state_004
+Graph saved to output/graph_vis_10/graph.json
+Telemetry saved to output/graph_vis_10/graph_telemetry.json
+  LLM calls: 13, tokens: 34996, success rate: 69%

@@ -22,7 +22,8 @@ from pathlib import Path
 from core.browser import BrowserManager
 from core.observer import extract_interactive_elements, extract_elements_via_page, format_page_context
 from core.decider import decide_action, decide_login_actions, get_telemetry
-from core.executor import execute_action
+import core.decider as decider_module
+from core.executor import execute_action, safe_navigate
 from core.state import compute_fingerprint, compute_phash, StateNode, ActionEdge
 from core.graph import StateGraph
 
@@ -35,6 +36,7 @@ class WebAgent:
         username: str | None = None,
         password: str | None = None,
         headless: bool = True,
+        vision: bool = False,
         screenshot_dir: str = "screenshots",
         output_path: str = "output/graph.json",
     ):
@@ -43,8 +45,12 @@ class WebAgent:
         self.username = username
         self.password = password
         self.headless = headless
+        self.vision = vision
         self.screenshot_dir = screenshot_dir
         self.output_path = output_path
+
+        # Enable vision mode in the decider module
+        decider_module.VISION_ENABLED = vision
 
         self.browser = BrowserManager()
         self.graph = StateGraph()
@@ -77,7 +83,10 @@ class WebAgent:
 
         page = await self.browser.start(headless=self.headless)
         try:
-            await self.browser.navigate(self.start_url)
+            ok, err = await safe_navigate(self.browser.page, self.start_url)
+            if not ok:
+                print(f"FATAL: Could not load start URL: {err}")
+                return self.graph
 
             # Handle login if credentials provided
             if self.username and self.password:
@@ -226,8 +235,14 @@ class WebAgent:
         explored_here = self.explored.get(current_id, set())
         context = format_page_context(url, title, elements)
 
-        # Ask LLM what to do (with information-gain hints)
-        action = decide_action(context, explored_here, elements, self._role_rewards)
+        # Get screenshot path for vision mode
+        current_screenshot = None
+        if self.vision and current_id and current_id in self.graph.nodes:
+            current_screenshot = self.graph.nodes[current_id].screenshot
+
+        # Ask LLM what to do (with information-gain hints + optional screenshot)
+        action = decide_action(context, explored_here, elements, self._role_rewards,
+                               screenshot_path=current_screenshot)
         if action is None:
             print(f"  No unexplored elements in {current_id}")
             return "backtrack"
@@ -249,7 +264,14 @@ class WebAgent:
         pre_state_count = len(self.graph.nodes)
 
         # Execute the action
-        success = await execute_action(self.browser.page, action, elements)
+        success, needs_reobserve = await execute_action(self.browser.page, action, elements)
+
+        if needs_reobserve:
+            print("  DOM detached — re-observing page state")
+            # Element list is stale; re-extract and let the next step pick up
+            self._update_role_reward(acted_role, discovered_new=False)
+            return "ok"
+
         if not success:
             print("  Action failed — skipping")
             self._update_role_reward(acted_role, discovered_new=False)
@@ -293,19 +315,26 @@ class WebAgent:
         self._role_attempts[role] = self._role_attempts.get(role, 0) + 1
 
     async def _backtrack(self) -> bool:
-        """Navigate back to a state with unexplored elements. Returns True if successful."""
+        """Navigate back to a state with unexplored elements.
+
+        Uses safe_navigate with timeout/reload fallback. If a state's URL
+        is unreachable, marks all its elements as explored (dead end) so
+        we don't keep trying to backtrack to it.
+        """
         for state_id, node in self.graph.nodes.items():
             explored_here = self.explored.get(state_id, set())
             total_elements = len(node.interactive_elements)
             if len(explored_here) < total_elements:
                 print(f"  Backtracking to {state_id} ({node.url})")
-                try:
-                    await self.browser.navigate(node.url)
+                ok, err = await safe_navigate(self.browser.page, node.url)
+                if ok:
                     await asyncio.sleep(1)
                     self.nav_stack.append(state_id)
                     return True
-                except Exception as e:
-                    print(f"  [warn] Backtrack navigation failed: {e}")
+                else:
+                    # Mark this state as a dead end — can't reach it anymore
+                    print(f"  [dead-end] Marking {state_id} as fully explored (unreachable: {err})")
+                    self.explored[state_id] = set(range(total_elements))
 
         if len(self.nav_stack) > 1:
             self.nav_stack.pop()
@@ -327,8 +356,25 @@ def main():
     parser.add_argument("--password", default=None, help="Login password (optional)")
     parser.add_argument("--headless", action="store_true", default=True, help="Run browser in headless mode")
     parser.add_argument("--no-headless", dest="headless", action="store_false", help="Show browser window")
-    parser.add_argument("--output", default="output/graph.json", help="Output JSON path")
+    parser.add_argument("--vision", action="store_true", default=False, help="Send screenshots to VLM alongside text (uses Kimi-K2.5 vision)")
+    parser.add_argument("--name", default=None, help="Run name — creates output/<name>/ with graph.json, telemetry, and screenshots")
+    parser.add_argument("--output", default=None, help="Output JSON path (overrides --name)")
     args = parser.parse_args()
+
+    # Resolve output path and screenshot dir
+    if args.output:
+        output_path = args.output
+        screenshot_dir = "screenshots"
+    elif args.name:
+        run_dir = f"output/{args.name}_{args.max_steps}"
+        output_path = f"{run_dir}/graph.json"
+        screenshot_dir = f"{run_dir}/screenshots"
+    else:
+        output_path = "output/graph.json"
+        screenshot_dir = "screenshots"
+
+    if args.vision:
+        print("[vision] Screenshot mode enabled — sending images to VLM")
 
     agent = WebAgent(
         start_url=args.url,
@@ -336,7 +382,9 @@ def main():
         username=args.username,
         password=args.password,
         headless=args.headless,
-        output_path=args.output,
+        vision=args.vision,
+        screenshot_dir=screenshot_dir,
+        output_path=output_path,
     )
     asyncio.run(agent.run())
 

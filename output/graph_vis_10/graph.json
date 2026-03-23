@@ -1,0 +1,340 @@
+{
+  "nodes": [
+    {
+      "id": "state_001",
+      "url": "https://example.com/",
+      "title": "Example Domain",
+      "dom_fingerprint": "7b4719d25394b73e",
+      "phash": "bc3c38c1c3c3c3c7",
+      "interactive_elements": [
+        "link: Learn more"
+      ],
+      "screenshot": "output/graph_vis_10/screenshots/state_001.png",
+      "timestamp": "2026-03-23T23:20:01.281285+00:00"
+    },
+    {
+      "id": "state_002",
+      "url": "https://www.iana.org/help/example-domains",
+      "title": "Example Domains",
+      "dom_fingerprint": "06ed24bcc1a6b553",
+      "phash": "8f0f40c56b688f1f",
+      "interactive_elements": [
+        "link: Domains",
+        "link: Protocols",
+        "link: Numbers",
+        "link: About",
+        "link: RFC 2606",
+        "link: RFC 6761",
+        "link: IANA-managed Reserved Domains",
+        "link: Domain\u00a0Names",
+        "link: Root Zone Registry",
+        "link: .INT Registry",
+        "link: .ARPA Registry",
+        "link: IDN Repository",
+        "link: Number\u00a0Resources",
+        "link: Abuse Information",
+        "link: Protocol Registries",
+        "link: Time Zone Database",
+        "link: About\u00a0Us",
+        "link: News",
+        "link: Performance",
+        "link: Excellence",
+        "link: Archive",
+        "link: Contact Us",
+        "link: Public Technical Identifiers",
+        "link: ICANN",
+        "link: Privacy Policy",
+        "link: Terms of Service"
+      ],
+      "screenshot": "output/graph_vis_10/screenshots/state_002.png",
+      "timestamp": "2026-03-23T23:20:14.908774+00:00"
+    },
+    {
+      "id": "state_003",
+      "url": "https://www.iana.org/domains",
+      "title": "Domain Name Services",
+      "dom_fingerprint": "edfc74f1cb52f9dc",
+      "phash": "bb07440f4f0ef8b1",
+      "interactive_elements": [
+        "link: Domains",
+        "link: Protocols",
+        "link: Numbers",
+        "link: About",
+        "link: Overview",
+        "link: Root Zone Management",
+        "link: .INT Registry",
+        "link: .ARPA Registry",
+        "link: The DNS Root Zone",
+        "link: .INT",
+        "link: .ARPA",
+        "link: IDN Practices Repository",
+        "link: Root Key Signing Key (DNSSEC)",
+        "link: Reserved Domains",
+        "link: Domain\u00a0Names",
+        "link: Root Zone Registry",
+        "link: IDN Repository",
+        "link: Number\u00a0Resources",
+        "link: Abuse Information",
+        "link: Protocol Registries",
+        "link: Time Zone Database",
+        "link: About\u00a0Us",
+        "link: News",
+        "link: Performance",
+        "link: Excellence",
+        "link: Archive",
+        "link: Contact Us",
+        "link: Public Technical Identifiers",
+        "link: ICANN",
+        "link: Privacy Policy",
+        "link: Terms of Service"
+      ],
+      "screenshot": "output/graph_vis_10/screenshots/state_003.png",
+      "timestamp": "2026-03-23T23:21:18.995309+00:00"
+    },
+    {
+      "id": "state_004",
+      "url": "https://www.iana.org/protocols",
+      "title": "Protocol Registries",
+      "dom_fingerprint": "22aa075eed4bd9d6",
+      "phash": "b90f14474f0b6bf0",
+      "interactive_elements": [
+        "link: Domains",
+        "link: Protocols",
+        "link: Numbers",
+        "link: About",
+        "link: Protocol Registries",
+        "link: Time Zone Database",
+        "link: Performance",
+        "link: IETF Draft Status",
+        "link: Rsync",
+        "link: FTP",
+        "link: consult the relevant application form",
+        "link: RFC 8126",
+        "link: A",
+        "link: B",
+        "link: C",
+        "link: D",
+        "link: E",
+        "link: F",
+        "link: G",
+        "link: H",
+        "link: I",
+        "link: J",
+        "link: K",
+        "link: L",
+        "link: M",
+        "link: N",
+        "link: O",
+        "link: P",
+        "link: Q",
+        "link: R",
+        "link: S",
+        "link: T",
+        "link: U",
+        "link: V",
+        "link: W",
+        "link: X",
+        "link: Y",
+        "link: ANCP Capability Types",
+        "link: RFC 6320",
+        "link: ANCP Command Codes"
+      ],
+      "screenshot": "output/graph_vis_10/screenshots/state_004.png",
+      "timestamp": "2026-03-23T23:21:52.639180+00:00"
+    },
+    {
+      "id": "state_005",
+      "url": "https://www.iana.org/numbers",
+      "title": "Number Resources",
+      "dom_fingerprint": "41298bc37d460add",
+      "phash": "bb071b0d4639ceb1",
+      "interactive_elements": [
+        "link: Domains",
+        "link: Protocols",
+        "link: Numbers",
+        "link: About",
+        "link: Overview",
+        "link: RIR Allocation Data",
+        "link: IPv6 (AFRINIC)",
+        "link: IPv6 (APNIC)",
+        "link: IPv6 (ARIN)",
+        "link: IPv6 (LACNIC)",
+        "link: IPv6 (RIPE NCC)",
+        "link: ASN (AFRINIC)",
+        "link: ASN (APNIC)",
+        "link: ASN (ARIN)",
+        "link: ASN (LACNIC)",
+        "link: ASN (RIPE NCC)",
+        "link: Abuse Issues",
+        "link: Questions and Answers",
+        "link: AFRINIC",
+        "link: APNIC",
+        "link: ARIN",
+        "link: LACNIC",
+        "link: RIPE NCC",
+        "link: global policy",
+        "link: IETF",
+        "link: IPv4 Address Space",
+        "link: IPv4 Multicast Address Space",
+        "link: IPv4 Special-Purpose Address Space",
+        "link: IPv4 Recovered Address Space",
+        "link: Bootstrap Service Registry for IPv4 Address Space",
+        "link: IPv6 Address Space",
+        "link: IPv6 Global Unicast Address Space",
+        "link: IPv6 Parameters",
+        "link: IPv6 Anycast Address Space",
+        "link: IPv6 Multicast Address Space",
+        "link: IPv6 Sub-TLA Assignments",
+        "link: IPv6 Special-Purpose Address Space",
+        "link: Bootstrap Service Registry for IPv6 Address Space",
+        "link: Announcement of Worldwide Deployment of IPv6",
+        "link: RIR Comparative Policy Overview"
+      ],
+      "screenshot": "output/graph_vis_10/screenshots/state_005.png",
+      "timestamp": "2026-03-23T23:22:37.217273+00:00"
+    },
+    {
+      "id": "state_006",
+      "url": "https://www.iana.org/about",
+      "title": "About us",
+      "dom_fingerprint": "d4ac1f2c6e4480e8",
+      "phash": "b90f4f07674b6894",
+      "interactive_elements": [
+        "link: Domains",
+        "link: Protocols",
+        "link: Numbers",
+        "link: About",
+        "link: Introduction",
+        "link: News",
+        "link: Performance",
+        "link: Audits",
+        "link: Excellence & Quality",
+        "link: Archive",
+        "link: Contact us",
+        "link: Domain Names",
+        "link: Number Resources",
+        "link: Protocol Assignments",
+        "link: Public Technical Identifiers",
+        "link: ICANN",
+        "link: Domain\u00a0Names",
+        "link: Root Zone Registry",
+        "link: .INT Registry",
+        "link: .ARPA Registry",
+        "link: IDN Repository",
+        "link: Number\u00a0Resources",
+        "link: Abuse Information",
+        "link: Protocol Registries",
+        "link: Time Zone Database",
+        "link: About\u00a0Us",
+        "link: Excellence",
+        "link: Contact Us",
+        "link: Privacy Policy",
+        "link: Terms of Service"
+      ],
+      "screenshot": "output/graph_vis_10/screenshots/state_006.png",
+      "timestamp": "2026-03-23T23:25:07.460289+00:00"
+    }
+  ],
+  "edges": [
+    {
+      "from": "state_001",
+      "to": "state_002",
+      "action": {
+        "type": "click",
+        "target": "Learn more",
+        "selector": "role=link[name=\"Learn more\"]",
+        "description": "click 'Learn more'"
+      }
+    },
+    {
+      "from": "state_002",
+      "to": "state_003",
+      "action": {
+        "type": "click",
+        "target": "Domains",
+        "selector": "role=link[name=\"Domains\"]",
+        "description": "click 'Domains'"
+      }
+    },
+    {
+      "from": "state_003",
+      "to": "state_004",
+      "action": {
+        "type": "click",
+        "target": "Protocols",
+        "selector": "role=link[name=\"Protocols\"]",
+        "description": "click 'Protocols'"
+      }
+    },
+    {
+      "from": "state_004",
+      "to": "state_003",
+      "action": {
+        "type": "click",
+        "target": "Domains",
+        "selector": "role=link[name=\"Domains\"]",
+        "description": "click 'Domains'"
+      }
+    },
+    {
+      "from": "state_003",
+      "to": "state_005",
+      "action": {
+        "type": "click",
+        "target": "Numbers",
+        "selector": "role=link[name=\"Numbers\"]",
+        "description": "click 'Numbers'"
+      }
+    },
+    {
+      "from": "state_005",
+      "to": "state_003",
+      "action": {
+        "type": "click",
+        "target": "Domains",
+        "selector": "role=link[name=\"Domains\"]",
+        "description": "click 'Domains'"
+      }
+    },
+    {
+      "from": "state_003",
+      "to": "state_003",
+      "action": {
+        "type": "click",
+        "target": "Domains",
+        "selector": "role=link[name=\"Domains\"]",
+        "description": "click 'Domains'"
+      }
+    },
+    {
+      "from": "state_003",
+      "to": "state_006",
+      "action": {
+        "type": "click",
+        "target": "About",
+        "selector": "role=link[name=\"About\"]",
+        "description": "click 'About'"
+      }
+    },
+    {
+      "from": "state_006",
+      "to": "state_003",
+      "action": {
+        "type": "click",
+        "target": "Domains",
+        "selector": "role=link[name=\"Domains\"]",
+        "description": "click 'Domains'"
+      }
+    },
+    {
+      "from": "state_003",
+      "to": "state_004",
+      "action": {
+        "type": "click",
+        "target": "Root Zone Management",
+        "selector": "role=link[name=\"Root Zone Management\"]",
+        "description": "click 'Root Zone Management'"
+      }
+    }
+  ]
+}

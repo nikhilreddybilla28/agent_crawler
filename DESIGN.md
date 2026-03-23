@@ -177,21 +177,39 @@ Telemetry is saved alongside the graph as `*_telemetry.json`, enabling:
 ```
 testsprite/
 ├── DESIGN.md              # This document
+├── report.md              # Project report — clear explanation of what was built
 ├── agent.py               # Main entry point + CLI + info-gain learning
 ├── core/
 │   ├── __init__.py
 │   ├── browser.py         # Playwright browser management
-│   ├── observer.py        # Page observation + element extraction
-│   ├── decider.py         # LLM integration + telemetry tracking
-│   ├── executor.py        # Action execution via Playwright
+│   ├── observer.py        # Page observation + tiered element extraction
+│   ├── decider.py         # LLM integration + telemetry + vision mode
+│   ├── executor.py        # Action execution via Playwright + DOM detach handling
 │   ├── state.py           # Multi-tier state fingerprinting (hash + pHash)
 │   ├── graph.py           # Graph data model + multi-tier matching
-│   └── som.py             # Set-of-Mark screenshot annotation
-├── screenshots/           # Captured state screenshots
-└── output/                # JSON graph + telemetry output
+│   └── som.py             # Set-of-Mark screenshot annotation (scaffolded)
+└── output/                # Per-run output directories
+    └── <name>_<steps>/
+        ├── graph.json
+        ├── telemetry.json
+        └── screenshots/
 ```
 
-### 8. Future Work (Production Hardening)
+### 8. Vision Mode
+
+Optional `--vision` flag sends screenshots alongside text to a Vision Language Model (VLM). Screenshots are base64-encoded and included in the multimodal prompt. A vision-specific system prompt instructs the LLM to use the image for spatial reasoning — layout, disabled states, modals, overlays.
+
+Supported providers: VT ARC (Kimi-K2.5), Anthropic (Claude Sonnet), OpenAI (gpt-4o-mini).
+
+### 9. CLI
+
+```
+python agent.py --url <URL> --name <run_name> --max-steps <N> [--vision] [--username USER --password PASS] [--no-headless]
+```
+
+`--name` creates `output/<name>_<max_steps>/` with graph, telemetry, and screenshots. `--output` overrides with an explicit path.
+
+### 10. Future Work (Production Hardening)
 
 | Area | Current | Production |
 |---|---|---|

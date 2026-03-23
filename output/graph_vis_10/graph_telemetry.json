@@ -1,0 +1,130 @@
+{
+  "total_calls": 13,
+  "successful_calls": 9,
+  "failed_calls": 4,
+  "success_rate": 0.6923076923076923,
+  "total_tokens": 34996,
+  "total_input_tokens": 25457,
+  "total_output_tokens": 9539,
+  "total_latency_ms": 315009.7,
+  "avg_latency_ms": 24231.5,
+  "calls": [
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 1914,
+      "latency_ms": 9202.7,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 2935,
+      "latency_ms": 33139.9,
+      "success": false,
+      "error": "'NoneType' object is not subscriptable"
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 2835,
+      "latency_ms": 28883.9,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 2668,
+      "latency_ms": 23160.1,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 2479,
+      "latency_ms": 15970.1,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 2556,
+      "latency_ms": 19580.1,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 2668,
+      "latency_ms": 17725.8,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 2995,
+      "latency_ms": 32601.9,
+      "success": false,
+      "error": "'NoneType' object is not subscriptable"
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 3029,
+      "latency_ms": 33937.6,
+      "success": false,
+      "error": "'NoneType' object is not subscriptable"
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 3029,
+      "latency_ms": 35046.1,
+      "success": false,
+      "error": "'NoneType' object is not subscriptable"
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 2752,
+      "latency_ms": 25331.3,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 2429,
+      "latency_ms": 16511.8,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "Kimi-K2.5",
+      "purpose": "action_selection",
+      "tokens": 2707,
+      "latency_ms": 23918.5,
+      "success": true,
+      "error": ""
+    }
+  ]
+}
