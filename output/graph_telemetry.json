@@ -1,0 +1,103 @@
+{
+  "total_calls": 10,
+  "successful_calls": 10,
+  "failed_calls": 0,
+  "success_rate": 1.0,
+  "total_tokens": 10290,
+  "total_input_tokens": 7983,
+  "total_output_tokens": 2307,
+  "total_latency_ms": 12200.2,
+  "avg_latency_ms": 1220.0,
+  "calls": [
+    {
+      "provider": "arc",
+      "model": "gpt-oss-120b",
+      "purpose": "action_selection",
+      "tokens": 572,
+      "latency_ms": 1285.7,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "gpt-oss-120b",
+      "purpose": "action_selection",
+      "tokens": 881,
+      "latency_ms": 1006.7,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "gpt-oss-120b",
+      "purpose": "action_selection",
+      "tokens": 1109,
+      "latency_ms": 945.6,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "gpt-oss-120b",
+      "purpose": "action_selection",
+      "tokens": 981,
+      "latency_ms": 1164.9,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "gpt-oss-120b",
+      "purpose": "action_selection",
+      "tokens": 1178,
+      "latency_ms": 1309.5,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "gpt-oss-120b",
+      "purpose": "action_selection",
+      "tokens": 1152,
+      "latency_ms": 1074.9,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "gpt-oss-120b",
+      "purpose": "action_selection",
+      "tokens": 1254,
+      "latency_ms": 1482.7,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "gpt-oss-120b",
+      "purpose": "action_selection",
+      "tokens": 1169,
+      "latency_ms": 1222.3,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "gpt-oss-120b",
+      "purpose": "action_selection",
+      "tokens": 978,
+      "latency_ms": 1456.4,
+      "success": true,
+      "error": ""
+    },
+    {
+      "provider": "arc",
+      "model": "gpt-oss-120b",
+      "purpose": "action_selection",
+      "tokens": 1016,
+      "latency_ms": 1251.5,
+      "success": true,
+      "error": ""
+    }
+  ]
+}
